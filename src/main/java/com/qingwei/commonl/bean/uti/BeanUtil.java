@@ -9,6 +9,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -102,15 +103,29 @@ public class BeanUtil {
 				
 				//如果忽略复制null属性并且属性为null，则不执行赋值操作，否则赋值属性
 				Method sourceReadMethod = sourcePd.getReadMethod();
+				setAccessibleMethod(sourceReadMethod);
 				Object value = sourceReadMethod.invoke(source);
 				if(ignoreNullProperties && null==value) {
 					continue;
 				}
+				setAccessibleMethod(targetWriteMethod);
 				targetWriteMethod.invoke(target, value);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Bean copy failed!", e);
 			throw new BeanException("Bean copy failed!", e);
+		}
+	}
+	
+	/** 
+	 * Description:  根据PropertyDescriptor返回具有取消默认 Java 语言访问控制检查能力的方法
+	 * @param pd PropertyDescriptor
+	 * @return 返回具有取消默认 Java 语言访问控制检查能力的方法
+	 */
+	public static void setAccessibleMethod(Method method) {
+		AssertUtil.notNull(method);
+		if(!Modifier.isPublic(method.getDeclaringClass().getModifiers())) {
+			method.setAccessible(true);
 		}
 	}
 
