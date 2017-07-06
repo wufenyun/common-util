@@ -84,4 +84,35 @@ public class AssertUtil {
 		}
 	}
 	
+	/** 
+     * Description:  断言字符串不为空，且字符串不能为空格。(null,"","  ")将抛出异常
+     * @param str 源字符串
+     * @param message 异常信息
+     */
+    public static void notBlank(String str) {
+        notBlank(str,"Assert failed:this argument is null or blank");
+    }
+	
+	/** 
+	 * Description:  断言字符串不为空，且字符串不能为空格。(null,"","  ")将抛出异常
+	 * @param str 源字符串
+	 * @param message 异常信息
+	 */
+	public static void notBlank(String str,String message) {
+	    if(null == str || str.length() == 0) {
+            throw new IllegalArgumentException(message);
+        }
+	   
+	    boolean isWhiteStr = true;
+	    for(int i=0;i<str.length();i++) {
+	        if(!Character.isWhitespace(str.charAt(i))) {
+	            isWhiteStr = false;
+	            break;
+	        }
+	    }
+	    if(isWhiteStr) {
+	        throw new IllegalArgumentException(message);
+	    }
+	}
+	
 }
